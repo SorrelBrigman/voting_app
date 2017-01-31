@@ -1,0 +1,10 @@
+
+.choice {
+  width: 45%;
+  float: left;
+}
+
+.choice img {
+  display: block;
+  max-width: 90%
+}
