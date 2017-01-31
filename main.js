@@ -27,16 +27,20 @@ function onVote(evt) {
     const voteFor = evt.target.closest('.choice').dataset.value
     const url = 'https://superbowlvoting.firebaseio.com/votes.json'
     //go get the current counts
-    fetch(url)
-    .then(stream => stream.json())
+    // fetch(url)
+    //.then(stream => stream.json())
+    firebase.database().ref('votes').once('value')
+    .then(snap => snap.val())
     .then(data => {
       const newCount = data && data[voteFor] ? data[voteFor] += 1 : 1
        //patch the new count
-       return fetch( url,
-        {
-          method : 'PATCH',
-          body: JSON.stringify({ [voteFor] : newCount})
-        })
+       // return fetch( url,
+       //  {
+       //    method : 'PATCH',
+       //    body: JSON.stringify({ [voteFor] : newCount
+       //    })
+       return firebase.database().ref('votes').update({[voteFor] : newCount })
+
       .then(()=>{
         document.querySelectorAll('h3').forEach(h => {
           const total = Object.values(data).reduce((acc, val)=>{
