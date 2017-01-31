@@ -11,13 +11,24 @@
     <div class="choice choice_a" data-value="falcons">
       <img src="https://s-media-cache-ak0.pinimg.com/originals/7c/dd/05/7cdd05048420994e8829eefc6c1ef722.jpg" alt="falcons logo" />
       <button >Vote</button>
-      <h3></h3>
+      <h3 class="hidden"></h3>
     </div>
 
     <div class="choice choice_b" data-value="patriots">
       <img src="https://s-media-cache-ak0.pinimg.com/originals/fa/d6/74/fad674c6f1a449aa760267f6f667fedc.jpg" alt="patriots logo"/>
       <button >Vote</button>
-      <h3></h3>
+      <h3 class="hidden"></h3>
+    </div>
+    <div class="clear"></div>
+
+    <div class="chat">
+      <h1>Trash Talk</h1>
+      <form>
+        <input type="text" placeholder="name" class="name" required>
+        <input type="text" placeholder="message" class="message" required>
+        <input type="submit">
+      </form>
+      <div class="messages"></div>
     </div>
 
     <script src="bower_components/firebase/firebase.js"></script>

@@ -8,3 +8,11 @@
   display: block;
   max-width: 90%
 }
+
+.hidden {
+  display: none;
+}
+
+.clear {
+  clear: both;
+}

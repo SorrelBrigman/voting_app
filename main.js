@@ -8,48 +8,38 @@ firebase.initializeApp({
   });
 
 
-var database = firebase.database();
 
 
 
+const votesRef = firebase.database().ref('votes')
+const messageRef = firebase.database().ref('messages')
 
+votesRef.on('value', onUpdate)
+messageRef.limitToLast(2).on('child_added', onNewMessage)
 
+function onNewMessage(snap) {
+  const data = snap.val()
+  document.querySelector(".messages").innerHTML += `<div><strong>${data.name}</strong>: ${data.message}</div>`
+}
 
-
-document
-  .querySelectorAll(".choice button")
-  .forEach(btn => btn.addEventListener('click', onVote))
 
 
 function onVote(evt) {
   //submit the vote
     //what button they click on
     const voteFor = evt.target.closest('.choice').dataset.value
-    const url = 'https://superbowlvoting.firebaseio.com/votes.json'
+    // const url = 'https://superbowlvoting.firebaseio.com/votes.json'
     //go get the current counts
     // fetch(url)
     //.then(stream => stream.json())
-    firebase.database().ref('votes').once('value')
+    votesRef.once('value')
     .then(snap => snap.val())
     .then(data => {
       const newCount = data && data[voteFor] ? data[voteFor] += 1 : 1
        //patch the new count
-       // return fetch( url,
-       //  {
-       //    method : 'PATCH',
-       //    body: JSON.stringify({ [voteFor] : newCount
-       //    })
-       return firebase.database().ref('votes').update({[voteFor] : newCount })
 
-      .then(()=>{
-        document.querySelectorAll('h3').forEach(h => {
-          const total = Object.values(data).reduce((acc, val)=>{
-            return acc + val
-          })
-          const current = data[h.closest('.choice').dataset.value]
-          h.innerText = Math.round( current / total * 100) + "%"
-        })
-      })
+       return votesRef.update({[voteFor] : newCount })
+
 
 
       console.log(data)
@@ -60,6 +50,68 @@ function onVote(evt) {
 
     //hide the buttons
   document.querySelectorAll("button").forEach(btn=> btn.remove())
+  document.querySelectorAll(".hidden").forEach(item => item.classList.remove('hidden'))
 
 
+}//end of onVote()
+
+
+function onMessage (snap) {
+  const data = snap.val()
+  let messageField = ""
+  data.forEach((val) => {
+    messageField += "name: "
+    messageField += val.name;
+    messageField += "message: "
+    messageField += val.message
+
+  })
+
+  document.querySelector(".messages").innerText = messageField
 }
+
+
+
+function onUpdate (snap) {
+  const data = snap.val()
+
+  document.querySelectorAll('h3').forEach(h => {
+    const total = Object.values(data).reduce((acc, val)=> {
+      return acc + val
+      })
+    const current = data[h.closest('.choice').dataset.value]
+    h.innerText = Math.round( current / total * 100) + "%"
+  })
+}
+
+
+const sendMessage = (evt) => {
+  evt.preventDefault()
+  let name = document.querySelector('.name').value.trim()
+  let message = document.querySelector('.message').value.trim()
+
+  let mess = {
+    "name" : name,
+    "message" : message
+  }
+
+  return messageRef.push(mess)
+    .then((e)=> {
+      console.log(e)
+      document.querySelector('.message').value = ''
+    })
+    .then()
+}
+
+
+
+
+
+
+document
+  .querySelectorAll(".choice button")
+  .forEach(btn => btn.addEventListener('click', onVote))
+
+document
+  .querySelector("form")
+  .addEventListener("submit", sendMessage)
